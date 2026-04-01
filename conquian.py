@@ -50,7 +50,7 @@ def validate_meld(cards):
 
     Side effect:
         Raises ValueError if the input list contains fewer than three cards.---(a game shouldn’t show the exception because it will look like the game crashed, it should be invisible to the user. So if there is a error raised, the program should handle it, without the game crashing)
-     ""” 
+     """ 
 
 def check_win_condition(player_melds):
     """
@@ -68,4 +68,3 @@ def check_win_condition(player_melds):
         Raises ValueError if the meld list is empty or if one of the melds is not in
         the correct format.
     """
-
