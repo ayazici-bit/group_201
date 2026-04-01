@@ -52,3 +52,20 @@ def validate_meld(cards):
         Raises ValueError if the input list contains fewer than three cards.---(a game shouldn’t show the exception because it will look like the game crashed, it should be invisible to the user. So if there is a error raised, the program should handle it, without the game crashing)
      ""” 
 
+def check_win_condition(player_melds):
+    """
+    Checks whether a player has won the game by reaching exactly 11 cards in melds.
+
+        Args:
+        player_melds (list of lists of tuples): A list containing the player’s melds.
+        Each meld is a list of card tuples, and each card is stored in the form
+        (rank, suit), such as (7, "clubs").
+
+    Returns:
+        bool: True if the player has exactly 11 cards in melds, False otherwise.
+
+    Side Effects:
+        Raises ValueError if the meld list is empty or if one of the melds is not in
+        the correct format.
+    """
+
