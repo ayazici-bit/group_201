@@ -19,3 +19,16 @@ def draw_card(draw_pile):
 	    Changes the draw pile state.
 	    Changes the player's hand state.
     """
+
+def computer_player():
+	"""
+	Represents the opponent the user is playing against. Like the user, it has its own (randomized) hand and will make decisions based on it. 
+	Like the user, it aims to meld cards by choosing from its own hand, the stock, or the discarded cards. 
+	The computer player will make this meld by taking out tuples (cards) from its own hand and stock/discard and adding them to the “cards” variable to be scored.
+
+	Attributes:
+		cpu_cards (list of tuples): A list of tuples where each represents a card the computer player has drawn.
+	
+	Side Effects:
+		Adds tuples to the “cards” variable based on what would score the most points for that turn.
+	"""
