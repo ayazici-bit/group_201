@@ -32,3 +32,23 @@ def computer_player():
 	Side Effects:
 		Adds tuples to the “cards” variable based on what would score the most points for that turn.
 	"""
+
+def validate_meld(cards):
+    """
+    Checks if the cards form a valid meld (a set or a sequence).
+    
+    A valid meld is either:
+    - a set: 3 or 4 cards of the same number
+    - a sequence: 3 or more cards in order of the same suit
+
+    Args:
+        cards (list of tuples): A list where each tuple represents a card in the form of rank and suit, 
+        such as ('7', 'hearts'). The list must contain at least three cards.
+
+    Returns:
+        bool: True if the cards form a valid meld, False otherwise.
+
+    Side effect:
+        Raises ValueError if the input list contains fewer than three cards.---(a game shouldn’t show the exception because it will look like the game crashed, it should be invisible to the user. So if there is a error raised, the program should handle it, without the game crashing)
+     ""” 
+
