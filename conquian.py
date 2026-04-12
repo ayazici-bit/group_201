@@ -51,6 +51,47 @@ def validate_meld(cards):
     Side effect:
         Raises ValueError if the input list contains fewer than three cards.---(a game shouldn’t show the exception because it will look like the game crashed, it should be invisible to the user. So if there is a error raised, the program should handle it, without the game crashing)
      """ 
+    if len(cards) < 3:
+        raise ValueError("A meld must have at least 3 cards")
+    
+    ranks = []
+    suits = []
+    
+    for card in cards:
+        ranks.append(card[0])
+        suits.append(card[1])
+    
+    same_rank = True
+    for rank in ranks:
+        if rank != ranks[0]:
+            same_rank = False
+            break
+    if same_rank:
+        return True
+        
+    same_suit = True
+    for suit in suits:
+        if suit != suits[0]:
+            same_suit = False
+            break
+	
+ 	if not same_suit:
+    	return False
+    
+    order = ['A', '2', '3', '4', '5', '6', '7', 'J', 'Q', 'K']
+    
+    values = []
+    for rank in ranks:
+        if rank not in order:
+            return False
+        values.append(order.index(rank))
+    values.sort()
+    
+    for i in range(len(values) - 1):
+        if values[i + 1] != values[i] + 1:
+            return False
+
+	return True
 
 def check_win_condition(player_melds):
     """
