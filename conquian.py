@@ -19,7 +19,51 @@ def draw_card(draw_pile):
 	    Changes the draw pile state.
 	    Changes the player's hand state.
     """
-
+    if len(draw_pile) == 0:
+        raise ValueError("Draw pile is empty")
+    
+    drawn_card = draw_pile.pop()
+    print(f'Drawn card: {drawn_card}')
+    #hand will be the player's hand attribute which will be a list of tuples
+    #checking a 4-card meld
+    for i in range(len(hand)):
+        for j in range(i + 1, len(hand)):
+            for k in range(j + 1, len(hand)):
+                test_meld = [hand[i], hand[j], hand[k], drawn_card]
+                
+                if validate_meld(test_meld):
+                    card1 = hand[i]
+                    card2 = hand[j]
+                    card3 = hand[k] 
+                    
+                    #remove meld from hand
+                    hand.remove(card1)
+                    hand.remove(card2)
+                    hand.remove(card3)
+                    
+                    return f"New meld: {test_meld}" 
+    #check 3-card meld
+    for i in range(len(hand)):
+        for j in range(i + 1, len(hand)):
+            test_meld = [hand[i], hand[j], drawn_card]
+            
+            if validate_meld(test_meld):
+                card1 = hand[i]
+                card2 = hand[j]
+                    
+                #remove meld from hand
+                hand.remove(card1)
+                hand.remove(card2)
+                    
+                return f"New meld: {test_meld}"
+    
+    print(f"No melds possible, discarding: {drawn_card}")  
+    #added to the discard pile (which will be list of tuples) instead
+    discard_pile.append(drawn_card)           
+    return None
+    
+hand = []
+discard_pile = []    
 card_rankings = {"A": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, 
                  "J": 8, "Q": 9, "K": 10}
 def __init__(self):
