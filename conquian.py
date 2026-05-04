@@ -61,99 +61,102 @@ def draw_card(draw_pile):
     #added to the discard pile (which will be list of tuples) instead
     discard_pile.append(drawn_card)           
     return None
-    
+	
 hand = []
 discard_pile = []    
 card_rankings = {"A": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, 
                  "J": 8, "Q": 9, "K": 10}
-def __init__(self):
-    pass
+class cpu_player:    
+    def __init__(self):
+        self.cpu_cards = []
+        self.cpu_melds = []
+        self.melded_cards_count = 0
 
-def cpu_turn(self, cpu_cards, discard_card):
-    """
-    Enables the computer opponent to take a turn. Decisions are made based on
-    the hand the computer has and the top card in the discard pile.
-    
-    Args:
-        cpu_cards (list of tuples): A list where each tuple represents an
-        unmelded card in the hand of the cpu. For now the assumption is that
-        cards will be formatted by value then suit. Ex: Queen of Hearts = QH
+    def cpu_turn(self, discard_card):
+        """
+        Enables the computer opponent to take a turn. Decisions are made based on
+        the hand the computer has and the top card in the discard pile.
         
-        discard_card (tuple): Represents the top card on the discard pile
-    """
-    # Checking for runs using the discarded card
-    
-    sorted_cpu_cards = sorted(cpu_cards, key = 
-                                lambda x:(x[1], card_rankings[x[0]]))
+        Args:
+            cpu_cards (list of tuples): A list where each tuple represents an
+            unmelded card in the hand of the cpu. Formatted as ("value", suit").
+            
+            discard_card (tuple): Represents the top card on the discard pile.
+        """
+        # Checking for runs using the discarded card
+        
+        sorted_cpu_cards = sorted(self.cpu_cards, key = 
+                                    lambda x:(x[1], card_rankings[x[0]]))
 
-    suit_match = []
-    suit_match.append(discard_card)
-    for card in sorted_cpu_cards:
-        if discard_card[1] == card[1]:
-            suit_match.append(card)
-    sequence = []
-    sorted_suit_match_dis = sorted(suit_match, key = lambda x: card_rankings[x[0]])
-    if len(sorted_suit_match_dis) >= 3:
-        for i in range(1, len(sorted_suit_match_dis)):
-            c1 = card_rankings[sorted_suit_match_dis[i][0]]
-            c2 = card_rankings[sorted_suit_match_dis[i-1][0]]
-            if c1 == c2 + 1:
-                sequence.append(sorted_suit_match_dis[i])
-                if len(sequence) >= 3:
-                    for card in sequence:
-                        cpu_cards.remove(card)
-                    cpu_melds.append(sequence)
-                    melded_cards_count += len(sequence)
-                    # Also need to go back one in the discard pile here, not
-                    # going to write this code now as it will depend on other
-                    # functions to understand how the discard pile will be
-                    # implemented.
-            elif len(sequence) < 3:
-                same_rank_cards = []
-                same_rank_cards.append(discard_card)
-                for card in cpu_cards:
-                    if card[0] == discard_card[0]:
-                        same_rank_cards.append(card)
-                if len(same_rank_cards) >= 3:
-                    for card in same_rank_cards:
-                        cpu_cards.remove(card)
-                        cpu_melds.append(same_rank_cards)
-                        melded_cards_count += len(same_rank_cards)
-    else:
-        # Need to implement the drawing of a random card from stock deck
-        # Again will do when how this will be implemented is known
-		# Most likely will be calling another function here
-        suit_match.append(drawn_card)
-        for card in cpu_cards:
-            if drawn_card[1] == card[1]:
+        suit_match = []
+        suit_match.append(discard_card)
+        for card in sorted_cpu_cards:
+            if discard_card[1] == card[1]:
                 suit_match.append(card)
-                sequence = []
-    sorted_suit_match_draw = sorted(suit_match, key = 
-                                    lambda x: card_rankings[x[0]])
-    if len(sorted_suit_match_draw) >= 3:
-        for i in range(1, len(sorted_suit_match_draw)):
-            c1 = card_rankings[sorted_suit_match_draw[i][0]]
-            c2 = card_rankings[sorted_suit_match_draw[i-1][0]]
-            if c1 == c2 + 1:
-                sequence.append(sorted_suit_match_draw[i])
-                if len(sequence) >= 3:
-                    for card in sequence:
-                        cpu_cards.remove(card)
-                    cpu_melds.append(sequence)
-                    melded_cards_count += len(sequence)
-            elif len(sequence) < 3:
-                same_rank_cards = []
-                same_rank_cards.append(drawn_card)
-                for card in cpu_cards:
-                    if card[0] == drawn_card[0]:
-                        same_rank_cards.append(card)
-                if len(same_rank_cards) >= 3:
-                    for card in same_rank_cards:
-                        cpu_cards.remove(card)
-                        cpu_melds.append(same_rank_cards)
-                        melded_cards_count += len(same_rank_cards)
-				# Meld logic within this function is a place holder and will ultimately be deferred to the validate_meld function.
-				# Likely by calling it within the cpu_turn function
+        sequence = []
+        sorted_suit_match_dis = sorted(suit_match, key = lambda x: card_rankings[x[0]])
+        if len(sorted_suit_match_dis) >= 3:
+            for i in range(1, len(sorted_suit_match_dis)):
+                c1 = card_rankings[sorted_suit_match_dis[i][0]]
+                c2 = card_rankings[sorted_suit_match_dis[i-1][0]]
+                if c1 == c2 + 1:
+                    sequence.append(sorted_suit_match_dis[i])
+                    if len(sequence) >= 3:
+                        for card in sequence:
+                            self.cpu_cards.remove(card)
+                        self.cpu_melds.append(sequence)
+                        self.melded_cards_count += len(sequence)
+                        # Also need to go back one in the discard pile here, not
+                        # going to write this code now as it will depend on other
+                        # functions to understand how the discard pile will be
+                        # implemented.
+                elif len(sequence) < 3:
+                    same_rank_cards = []
+                    same_rank_cards.append(discard_card)
+                    for card in self.cpu_cards:
+                        if card[0] == discard_card[0]:
+                            same_rank_cards.append(card)
+                    if len(same_rank_cards) >= 3:
+                        for card in same_rank_cards:
+                            self.cpu_cards.remove(card)
+                            self.cpu_melds.append(same_rank_cards)
+                            self.melded_cards_count += len(same_rank_cards)
+        else:
+            # Need to implement the drawing of a random card from stock deck
+            # Again will do when how this will be implemented is known
+            # Most likely will be calling another function here
+            suit_match = []
+            suit_match.append(drawn_card)
+            for card in self.cpu_cards:
+                if drawn_card[1] == card[1]:
+                    suit_match.append(card)
+                    sequence = []
+        sorted_suit_match_draw = sorted(suit_match, key = 
+                                        lambda x: card_rankings[x[0]])
+        if len(sorted_suit_match_draw) >= 3:
+            for i in range(1, len(sorted_suit_match_draw)):
+                c1 = card_rankings[sorted_suit_match_draw[i][0]]
+                c2 = card_rankings[sorted_suit_match_draw[i-1][0]]
+                if c1 == c2 + 1:
+                    sequence.append(sorted_suit_match_draw[i])
+                    if len(sequence) >= 3:
+                        for card in sequence:
+                            self.cpu_cards.remove(card)
+                        self.cpu_melds.append(sequence)
+                        self.melded_cards_count += len(sequence)
+                elif len(sequence) < 3:
+                    same_rank_cards = []
+                    same_rank_cards.append(drawn_card)
+                    for card in self.cpu_cards:
+                        if card[0] == drawn_card[0]:
+                            same_rank_cards.append(card)
+                    if len(same_rank_cards) >= 3:
+                        for card in same_rank_cards:
+                            self.cpu_cards.remove(card)
+                            self.cpu_melds.append(same_rank_cards)
+                            self.melded_cards_count += len(same_rank_cards)
+                    # Meld logic within this function is a place holder and will ultimately be deferred to the validate_meld function.
+                    # Likely by calling it within the cpu_turn function
 
 def validate_meld(cards):
     """
