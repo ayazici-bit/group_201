@@ -122,6 +122,8 @@ class cpu_player:
             Can remove cards from discard_pile.
             Can end program if CPU meets win condition.
         """
+        if discard_pile == 0:
+            return False
         cpu_hand_and_discard = self.cpu_cards + [discard_card]
         poss_cpu_melds = find_possible_melds(cpu_hand_and_discard)
         if poss_cpu_melds:
@@ -137,7 +139,7 @@ class cpu_player:
             if self.cpu_melded_cards_count == 11:
                 print("The CPU has melded 11 cards and has beaten you! "
                 f"Better luck next time.")
-                exit()
+                return "CPU WIN"
             return True
         else:
             return False
@@ -172,7 +174,7 @@ class cpu_player:
             if self.cpu_melded_cards_count == 11:
                 print("The CPU has melded 11 cards and has beaten you! "
                 "Better luck next time.")
-                exit()
+                return "CPU WIN"
         else:
             discard_pile.append(drawn_card)
         return True
@@ -323,3 +325,65 @@ def check_win_condition(player_melds):
 	        return True
 	    else:
 	        return False
+
+def player_turn():
+    """
+
+    """
+    if len(discard_pile) == 0:
+        drawn_card = draw_card(draw_pile)
+        if type(drawn_card) is not tuple:
+                return
+        hand.append(drawn_card)
+    else:
+        discard_card = discard_pile[0]    
+        dis_or_draw = input(f"Would you like to use the discard card: {discard_card}" 
+                            "(d) or draw a card (c)?").lower()
+        if dis_or_draw == "c":
+            drawn_card = draw_card(draw_pile)
+            if type(drawn_card) is not tuple:
+                return
+            hand.append(drawn_card)
+        elif dis_or_draw == "d":
+            discard_pile.pop(0)
+            hand.append(discard_card)
+    i = 0
+    while i < len(hand):
+        print(f"{i}: {hand[i]}")
+        i += 1
+    choice = input("Choose what cards you would like to add to a meld,"
+    " list the cards by index seperated by spaces(ex: 0 4 8).")
+    indices = choice.split()
+    indices = [int(i) for i in indices]
+    chosen_cards = []
+    for index in indices:
+        chosen_cards.append(hand[index])
+    if validate_meld(chosen_cards):
+        print("Good meld!")
+        for card in chosen_cards:
+            hand.remove(card)
+        player_melds.append(chosen_cards)
+        if check_win_condition(player_melds):
+            return "PLAYER WINS"
+    else:
+        print("Invalid meld")
+    i = 0
+    while i < len(hand):
+        print(f"{i}: {hand[i]}")
+        i += 1
+        chosen_discard = int(input("What card would you like to discard? (Choose by index)"))
+        hand.remove(hand[chosen_discard])
+        discard_pile.append(hand[chosen_discard])
+
+class Game:
+    def __init__(self):
+        self.cpu = cpu_player()
+        self.player_turn = "Human Player"
+
+    def play_game(self):
+        if self.turn == "Human Player":
+            
+
+if __name__ == "__main__":
+    game = Game()
+    game.play_game()
