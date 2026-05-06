@@ -62,101 +62,120 @@ def draw_card(draw_pile):
     discard_pile.append(drawn_card)           
     return None
 	
-hand = []
-discard_pile = []    
 card_rankings = {"A": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, 
                  "J": 8, "Q": 9, "K": 10}
 class cpu_player:    
     def __init__(self):
+        """
+        Runs to intialize the things needed for the CPU player. This includes their hand,
+        the meld_list, and the amount of cards it has melded.
+
+        Attributes:
+            cpu_cards (list of tuples): The CPU's hand of unmelded cards. Each card is
+            represented as ("rank", "suit").
+
+            cpu_melds (list of lists of tuples): The melds the CPU has completed.
+
+            cpu_melded_cards_count (int): The number of cards the CPU has melded. When
+            the value reaches 11 the CPU has won and the game is over.
+        """
         self.cpu_cards = []
         self.cpu_melds = []
-        self.melded_cards_count = 0
+        self.cpu_melded_cards_count = 0
 
     def cpu_turn(self, discard_card):
         """
-        Enables the computer opponent to take a turn. Decisions are made based on
-        the hand the computer has and the top card in the discard pile.
-        
-        Args:
-            cpu_cards (list of tuples): A list where each tuple represents an
-            unmelded card in the hand of the cpu. Formatted as ("value", suit").
-            
-            discard_card (tuple): Represents the top card on the discard pile.
-        """
-        # Checking for runs using the discarded card
-        
-        sorted_cpu_cards = sorted(self.cpu_cards, key = 
-                                    lambda x:(x[1], card_rankings[x[0]]))
+        Executes the CPU's turn. It first tries to make a meld using the discard card. If
+        no meld can be formed it will draw a card in an attempt to make melds with that card.
+        If no melds can be formed it will discard a card.
 
-        suit_match = []
-        suit_match.append(discard_card)
-        for card in sorted_cpu_cards:
-            if discard_card[1] == card[1]:
-                suit_match.append(card)
-        sequence = []
-        sorted_suit_match_dis = sorted(suit_match, key = lambda x: card_rankings[x[0]])
-        if len(sorted_suit_match_dis) >= 3:
-            for i in range(1, len(sorted_suit_match_dis)):
-                c1 = card_rankings[sorted_suit_match_dis[i][0]]
-                c2 = card_rankings[sorted_suit_match_dis[i-1][0]]
-                if c1 == c2 + 1:
-                    sequence.append(sorted_suit_match_dis[i])
-                    if len(sequence) >= 3:
-                        for card in sequence:
-                            self.cpu_cards.remove(card)
-                        self.cpu_melds.append(sequence)
-                        self.melded_cards_count += len(sequence)
-                        # Also need to go back one in the discard pile here, not
-                        # going to write this code now as it will depend on other
-                        # functions to understand how the discard pile will be
-                        # implemented.
-                elif len(sequence) < 3:
-                    same_rank_cards = []
-                    same_rank_cards.append(discard_card)
-                    for card in self.cpu_cards:
-                        if card[0] == discard_card[0]:
-                            same_rank_cards.append(card)
-                    if len(same_rank_cards) >= 3:
-                        for card in same_rank_cards:
-                            self.cpu_cards.remove(card)
-                            self.cpu_melds.append(same_rank_cards)
-                            self.melded_cards_count += len(same_rank_cards)
+        Args:
+            discard_card (tuple): The top card on the discard pile.
+
+        Side Effects:
+            Can remove cards from cpu_cards and add them to cpu_melds.
+            Can increase cpu_melded_cards_count.
+            Can remove cards from draw_pile.
+            Can remove cards from discard_pile.
+            Can append cards to discard_pile.
+            Can end program if CPU meets win condition.
+        """
+        discard_card = discard_pile[0]
+        if self.cpu_try_discard(discard_card):
+            return
+        self.cpu_try_draw()
+
+    def cpu_try_discard(self, discard_card):
+        """
+        Looks at the top card in the discard pile. If a meld can be made with it, the CPU
+        will do so.
+
+        Args:
+            discard_card (tuple): The top card on the discard pile.
+
+        Returns:
+            A boolean value: True if a meld is made, False if it is not.
+        
+        Side Effects:
+            Can remove cards from cpu_cards and add them to cpu_melds.
+            Can increase cpu_melded_cards_count.
+            Can remove cards from discard_pile.
+            Can end program if CPU meets win condition.
+        """
+        cpu_hand_and_discard = self.cpu_cards + [discard_card]
+        poss_cpu_melds = find_possible_melds(cpu_hand_and_discard)
+        if poss_cpu_melds:
+            discard_pile.pop()
+            best_cpu_meld = poss_cpu_melds[0]
+            for card in best_cpu_meld:
+                if card in self.cpu_cards:
+                    self.cpu_cards.remove(card)
+            self.cpu_melds.append(best_cpu_meld)
+            self.cpu_melded_cards_count += len(best_cpu_meld)
+            print(f"The CPU has made a meld:{best_cpu_meld}. It used the discard pile" 
+                  "to do so. The CPU has now melded {self.cpu_melded_cards_count} cards.")
+            if self.cpu_melded_cards_count == 11:
+                print("The CPU has melded 11 cards and has beaten you! "
+                f"Better luck next time.")
+                exit()
+            return True
         else:
-            # Need to implement the drawing of a random card from stock deck
-            # Again will do when how this will be implemented is known
-            # Most likely will be calling another function here
-            suit_match = []
-            suit_match.append(drawn_card)
-            for card in self.cpu_cards:
-                if drawn_card[1] == card[1]:
-                    suit_match.append(card)
-                    sequence = []
-        sorted_suit_match_draw = sorted(suit_match, key = 
-                                        lambda x: card_rankings[x[0]])
-        if len(sorted_suit_match_draw) >= 3:
-            for i in range(1, len(sorted_suit_match_draw)):
-                c1 = card_rankings[sorted_suit_match_draw[i][0]]
-                c2 = card_rankings[sorted_suit_match_draw[i-1][0]]
-                if c1 == c2 + 1:
-                    sequence.append(sorted_suit_match_draw[i])
-                    if len(sequence) >= 3:
-                        for card in sequence:
-                            self.cpu_cards.remove(card)
-                        self.cpu_melds.append(sequence)
-                        self.melded_cards_count += len(sequence)
-                elif len(sequence) < 3:
-                    same_rank_cards = []
-                    same_rank_cards.append(drawn_card)
-                    for card in self.cpu_cards:
-                        if card[0] == drawn_card[0]:
-                            same_rank_cards.append(card)
-                    if len(same_rank_cards) >= 3:
-                        for card in same_rank_cards:
-                            self.cpu_cards.remove(card)
-                            self.cpu_melds.append(same_rank_cards)
-                            self.melded_cards_count += len(same_rank_cards)
-                    # Meld logic within this function is a place holder and will ultimately be deferred to the validate_meld function.
-                    # Likely by calling it within the cpu_turn function
+            return False
+    
+    def cpu_try_draw(self):
+        """
+        If the discard card does not work, this function will draw a card and attempt
+        to make a meld with it. If the drawn card does not work the card is discarded.
+
+        Returns:
+            A boolean value: True if a meld is made, False if it is not.
+
+        Side Effects:
+            Can remove cards from cpu_cards and add them to cpu_melds.
+            Can remove cards from draw_pile.
+            Can increase cpu_melded_cards_count.
+            Can append cards to discard_pile.
+            Can end program if CPU meets win condition.
+        """
+        drawn_card = draw_card(draw_pile)
+        if type(drawn_card) is not tuple:
+            return False
+        cpu_hand_and_drawn = self.cpu_cards + [drawn_card]
+        poss_cpu_melds = find_possible_melds(cpu_hand_and_drawn)
+        if poss_cpu_melds:
+            best_cpu_meld = poss_cpu_melds[0]
+            for card in best_cpu_meld:
+                if card in self.cpu_cards:
+                    self.cpu_cards.remove(card)
+            self.cpu_melds.append(best_cpu_meld)
+            self.cpu_melded_cards_count += len(best_cpu_meld)
+            if self.cpu_melded_cards_count == 11:
+                print("The CPU has melded 11 cards and has beaten you! "
+                "Better luck next time.")
+                exit()
+        else:
+            discard_pile.append(drawn_card)
+        return True
 
 def validate_meld(cards):
     """
