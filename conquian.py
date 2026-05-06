@@ -167,63 +167,113 @@ def validate_meld(cards):
     - a sequence: 3 or more cards in order of the same suit
 
     Args:
-        cards (list of tuples): A list where each tuple represents a card in the form of rank and suit, 
+        cards (list of tuples): A list where each tuple represents a card in 
+        the form of rank and suit, 
         such as ('7', 'hearts'). The list must contain at least three cards.
+    
+    Paul Gomes:    
+    Technique:
+        comprehensions - ranks and suits are pulled from the card
+        list using list comprehensions.
 
     Returns:
         bool: True if the cards form a valid meld, False otherwise.
 
     Side effect:
-        Raises ValueError if the input list contains fewer than three cards.---(a game shouldn’t show the exception because it will look like the game crashed, it should be invisible to the user. So if there is a error raised, the program should handle it, without the game crashing)
+        Raises ValueError if the input list contains fewer than three cards.
      """ 
-    if len(cards) < 3:
-        raise ValueError("A meld must have at least 3 cards")
+    try:
+        if len(cards) < 3:
+            raise ValueError("A meld must have at least 3 cards.")
+    except ValueError:
+        return False
     
-    ranks = []
-    suits = []
-    
-    for card in cards:
-        ranks.append(card[0])
-        suits.append(card[1])
+    ranks = [card[0] for card in cards]
+    suits = [card[1] for card in cards]
     
     same_rank = True
     for rank in ranks:
         if rank != ranks[0]:
             same_rank = False
             break
+
     if same_rank:
         return True
-        
+
     same_suit = True
     for suit in suits:
         if suit != suits[0]:
             same_suit = False
             break
-	
- 	if not same_suit:
-    	return False
-    
-    order = ['A', '2', '3', '4', '5', '6', '7', 'J', 'Q', 'K']
-    
+
+    if not same_suit:
+        return False
+
     values = []
     for rank in ranks:
-        if rank not in order:
-            return False
-        values.append(order.index(rank))
+        values.append(card_rankings[rank])
     values.sort()
-    
+
     for i in range(len(values) - 1):
         if values[i + 1] != values[i] + 1:
             return False
 
-	return True
+    return True 
+
+def find_possible_melds(hand, max_meld_size=4):
+    """
+    Finds all valid melds a player could make from their current hand.
+
+    Looks at every possible group of 3 cards and every possible group
+    of 4 cards. Keeps the ones that are valid melds. Returns them sorted
+    from largest to smallest.
+
+    Paul Gomes:
+    Techniques: 
+        - comprehensions — valid combinations are found and filtered
+          using list comprehensions.
+        - optional parameters — max_meld_size has a default value of 4,
+          so the caller can limit results to 3-card melds only if needed,
+          but does not have to pass anything for normal use.
+
+    Args:
+        hand (list of tuples): The player's current unmelded cards.
+        max_meld_size (int): The largest meld size to check for.
+                             Default is 4. Pass 3 to only find 3-card melds.
+
+    Returns:
+        list of lists:All valid melds found, largest first.
+                          Empty list if no melds are possible.
+    """
+    three_card_melds = [
+        [hand[i], hand[j], hand[k]]
+        for i in range(len(hand))
+        for j in range(i + 1, len(hand))
+        for k in range(j + 1, len(hand))
+        if validate_meld([hand[i], hand[j], hand[k]])]
+
+    four_card_melds = []
+    if max_meld_size == 4:
+        four_card_melds = [
+            [hand[i], hand[j], hand[k], hand[l]]
+            for i in range(len(hand))
+            for j in range(i + 1, len(hand))
+            for k in range(j + 1, len(hand))
+            for l in range(k + 1, len(hand))
+            if validate_meld([hand[i], hand[j], hand[k], hand[l]])]
+
+    possible_melds = three_card_melds + four_card_melds
+
+    possible_melds.sort(key=lambda meld: len(meld), reverse=True)
+
+    return possible_melds
 
 def check_win_condition(player_melds):
     """
     Checks whether a player has won the game by reaching exactly 11 cards in melds.
 
-        Args:
-        player_melds (list of lists of tuples): A list containing the player’s melds.
+    Args:
+        player_melds (list of lists of tuples): A list containing the players melds.
         Each meld is a list of card tuples, and each card is stored in the form
         (rank, suit), such as (7, "clubs").
 
