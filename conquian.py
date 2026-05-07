@@ -140,6 +140,7 @@ class cpu_player:
         self.cpu_cards = []
         self.cpu_melds = []
         self.cpu_melded_cards_count = 0
+        self.game = game
 
     def deal_hand(self):
         """
@@ -169,7 +170,7 @@ class cpu_player:
             Can append cards to discard_pile.
             Can end program if CPU meets win condition.
         """
-        discard_card = discard_pile[0]
+        discard_card = self.game.discard_pile[-1]
         if self.cpu_try_discard(discard_card):
             return
         self.cpu_try_draw()
@@ -191,12 +192,12 @@ class cpu_player:
             Can remove cards from discard_pile.
             Can end program if CPU meets win condition.
         """
-        if discard_pile == 0:
-            return False
+        if len(self.game.discard_pile) == 0:
+            return self.cpu.try_draw()
         cpu_hand_and_discard = self.cpu_cards + [discard_card]
         poss_cpu_melds = find_possible_melds(cpu_hand_and_discard)
         if poss_cpu_melds:
-            discard_pile.pop()
+            self.game.discard_pile.pop()
             best_cpu_meld = poss_cpu_melds[0]
             for card in best_cpu_meld:
                 if card in self.cpu_cards:
@@ -204,10 +205,10 @@ class cpu_player:
             self.cpu_melds.append(best_cpu_meld)
             self.cpu_melded_cards_count += len(best_cpu_meld)
             print(f"The CPU has made a meld:{best_cpu_meld}. It used the discard pile" 
-                  "to do so. The CPU has now melded {self.cpu_melded_cards_count} cards.")
+                  f"to do so. The CPU has now melded {self.cpu_melded_cards_count} cards.")
             if self.cpu_melded_cards_count == 11:
                 print("The CPU has melded 11 cards and has beaten you! "
-                f"Better luck next time.")
+                "Better luck next time.")
                 return "CPU WIN"
             return True
         else:
@@ -228,42 +229,9 @@ class cpu_player:
             Can append cards to discard_pile.
             Can end program if CPU meets win condition.
         """
-        drawn_card = draw_card(draw_pile)
-        if type(drawn_card) is not tuple:
+        if len(self.game.draw_pile) == 0:
             return False
-        cpu_hand_and_drawn = self.cpu_cards + [drawn_card]
-        poss_cpu_melds = find_possible_melds(cpu_hand_and_drawn)
-        if poss_cpu_melds:
-            best_cpu_meld = poss_cpu_melds[0]
-            for card in best_cpu_meld:
-                if card in self.cpu_cards:
-                    self.cpu_cards.remove(card)
-            self.cpu_melds.append(best_cpu_meld)
-            self.cpu_melded_cards_count += len(best_cpu_meld)
-            if self.cpu_melded_cards_count == 11:
-                print("The CPU has melded 11 cards and has beaten you! "
-                "Better luck next time.")
-                return "CPU WIN"
-        else:
-            discard_pile.append(drawn_card)
-        return True
-    
-    def cpu_try_draw(self):
-        """
-        If the discard card does not work, this function will draw a card and attempt
-        to make a meld with it. If the drawn card does not work the card is discarded.
-
-        Returns:
-            A boolean value: True if a meld is made, False if it is not.
-
-        Side Effects:
-            Can remove cards from cpu_cards and add them to cpu_melds.
-            Can remove cards from draw_pile.
-            Can increase cpu_melded_cards_count.
-            Can append cards to discard_pile.
-            Can end program if CPU meets win condition.
-        """
-        drawn_card = draw_card(draw_pile)
+        drawn_card = self.game.draw_pile.pop()
         if type(drawn_card) is not tuple:
             return False
         cpu_hand_and_drawn = self.cpu_cards + [drawn_card]
