@@ -4,26 +4,36 @@ a computer player.
 import random
 
 class Player:
-    """
+    """Creates a player that can access the game class to play.
+    Attributes:
+        name(str): Name of the player
+        hand(list of tuples): Cards in player's hand
+        melds(list of lists of tuples): The melds the player has completed
+        count_melds(int): Number of melds player has acquired
     """
     def __init__(self, name, game):
-        """
+        """_summary_
+
+        Args:
+            name(str): Name of the player
+            game(Game object): Game surrently being played
         """
         self.name = name
+        self.game = game
         self.hand = []
         self.melds = []
         self.count_melds = 0
+        
     def deal_hand(self):
         """
-
-        Args:
-            draw_pile (_type_): _description_
+        Deals cards from draw pile to player's hand
         """
         while len(self.hand) < 10:
             self.hand.append(self.game.draw_pile.pop())
             
     def draw_card(self, draw_pile, discard_pile):
-        """ Draw a card from the draw pile and add card to hand if applicable.
+        """
+        Draw a card from the draw pile and add card to hand if applicable.
 
         Args:
             draw_pile (list of tuples): A list containing the draw pile’s number and
@@ -80,9 +90,34 @@ class Player:
         
         print(f"No melds possible, discarding: {drawn_card}")  
         #added to the discard pile (which will be list of tuples) instead
-        discard_pile.append(drawn_card)           
+        self.game.discard_pile.append(drawn_card)           
         return None
-	
+    
+    def show_hand(self):
+        """
+        Shows the player's completed melds.
+
+        Returns:
+            list of lists: All valid melds found, largest first.
+                          Empty list if no melds are possible. 
+        """
+        possible_melds = find_possible_melds(self.hand)
+        self.melds.append(possible_melds)
+        return possible_melds
+        
+    def number_of_melds(self):
+        """
+        Shows the amount of the player's completed melds.
+        
+        Returns:
+            int: The number of melds in player's hand
+        """
+        if len(self.hand) < 2:
+            raise ValueError
+        number = len(find_possible_melds(self.hand))
+        self.count_melds + number
+        return number
+    
 card_rankings = {"A": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, 
                  "J": 8, "Q": 9, "K": 10}
 class cpu_player:    
@@ -398,7 +433,21 @@ def player_turn():
         discard_pile.append(hand[chosen_discard])
 
 class Game:
+    """
+    Stores the game state.
+    
+    """
     def __init__(self):
+        """
+        Creates game object. 
+        Attributes:
+            player(Player object): The player playing
+            cpu(cpu_player): The computer player playing
+            player_turn(str): Tracking whose turn it is
+            cards(list of tuples): The playing cards used in conquian
+            draw_pile(list of tuples): Shuffled deck
+            discard_pile(list of tuples): Discarded cards pile
+        """
         self.player = Player()
         self.cpu = cpu_player()
         self.player_turn = "Human Player"
