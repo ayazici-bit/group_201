@@ -340,12 +340,12 @@ def check_win_condition(player_melds):
 	            raise ValueError("Each meld must be a list of card tuples.")
 	
 	        for card in meld:
+				if not isinstance(card, tuple):
+					raise TypeError("Each card must be stored as a tuple.")
+				rank, suit - card 
 	            total_cards += 1
-	
-	    if total_cards == 11:
-	        return True
-	    else:
-	        return False
+		
+		 return True if total_cards == 11 else False 
 
 def player_turn():
     """
