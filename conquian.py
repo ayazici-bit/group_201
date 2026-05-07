@@ -141,6 +141,17 @@ class cpu_player:
         self.cpu_melds = []
         self.cpu_melded_cards_count = 0
 
+    def deal_hand(self):
+        """
+        Deals cards to the CPU.
+
+        Side Effects:
+            Adds cards to CPU hand
+            Removes cards from the draw pile
+        """
+        while len(self.cpu_cards) < 10:
+            self.cpu_cards.append(self.game.draw_pile.pop())
+
     def cpu_turn(self, discard_card):
         """
         Executes the CPU's turn. It first tries to make a meld using the discard card. If
@@ -201,6 +212,41 @@ class cpu_player:
             return True
         else:
             return False
+    
+    def cpu_try_draw(self):
+        """
+        If the discard card does not work, this function will draw a card and attempt
+        to make a meld with it. If the drawn card does not work the card is discarded.
+
+        Returns:
+            A boolean value: True if a meld is made, False if it is not.
+
+        Side Effects:
+            Can remove cards from cpu_cards and add them to cpu_melds.
+            Can remove cards from draw_pile.
+            Can increase cpu_melded_cards_count.
+            Can append cards to discard_pile.
+            Can end program if CPU meets win condition.
+        """
+        drawn_card = draw_card(draw_pile)
+        if type(drawn_card) is not tuple:
+            return False
+        cpu_hand_and_drawn = self.cpu_cards + [drawn_card]
+        poss_cpu_melds = find_possible_melds(cpu_hand_and_drawn)
+        if poss_cpu_melds:
+            best_cpu_meld = poss_cpu_melds[0]
+            for card in best_cpu_meld:
+                if card in self.cpu_cards:
+                    self.cpu_cards.remove(card)
+            self.cpu_melds.append(best_cpu_meld)
+            self.cpu_melded_cards_count += len(best_cpu_meld)
+            if self.cpu_melded_cards_count == 11:
+                print("The CPU has melded 11 cards and has beaten you! "
+                "Better luck next time.")
+                return "CPU WIN"
+        else:
+            discard_pile.append(drawn_card)
+        return True
     
     def cpu_try_draw(self):
         """
@@ -450,9 +496,10 @@ class Game:
             draw_pile(list of tuples): Shuffled deck
             discard_pile(list of tuples): Discarded cards pile
         """
-        self.player = Player()
+        self.player = Player("Human Player, self")
         self.cpu = cpu_player()
         self.player_turn = "Human Player"
+        self.cpu_turn = self
         
         self.cards = [('Ace', 'Diamonds'), ('2', 'Diamonds'), ('3', 'Diamonds'), 
              ('4', 'Diamonds'), ('5', 'Diamonds'), ('6', 'Diamonds'),
@@ -471,10 +518,61 @@ class Game:
         self.draw_pile = self.cards.copy()
         random.shuffle(self.draw_pile)
         self.discard_pile = []
+        self.player.deal_hand()
+        self.cpu.deal_hand()
+    
+    def player_turn(self):
+        """
+        Executes the human player's turn.
+
+        Returns:
+            "PLAYER WIN" (str): Declares player the winner if win condition is met.
+
+        Side Effects:
+            Draws cards to player's hand.
+            Can change player's melds.
+            Take cards from draw pile or discard pile.
+        """
+        self.player.draw_card(self.draw_pile)
+        print(self.player_hand)
+        if check_win_condition(self.player_melds):
+            return "PLAYER WIN"
+    
+    def cpu_turn_run(self):
+        """
+        Executes the CPU player's turn.
+
+        Returns:
+            "CPU WIN" (str): Declares CPU the winner if win condition is met.
+
+        Side Effects:
+            Can change CPU cards.
+            Can change CPU melds.
+            Takes cards from draw pile or discard pile.
+        """
+        if self.cpu.cpu_turn(self.discard_pile[-1]):
+            return "CPU WIN"
     
     def play_game(self):
-        if self.turn == "Human Player":
-            
+        """
+        Lets player and CPU execute turns until the game is over. The game is over
+        when one of them wins or when the draw pile is empty.
+
+        Side Effects:
+            Alternates turns.
+            Can end game if win condition is met or draw pile is empty.
+        """
+        game_over = False
+        while not game_over:
+            if len(self.draw_pile) == 0:
+                print("The draw pile is empty, nobody wins.")
+                game_over = True
+            player_result = self.player_turn()
+            if player_result == "PLAYER WIN":
+                game_over = True
+            cpu_result = self.cpu_turn_run()
+            if cpu_result == "CPU WIN":
+                game_over = True
 
 if __name__ == "__main__":
     game = Game()
