@@ -12,7 +12,7 @@ class Player:
         count_melds(int): Number of melds player has acquired
     """
     def __init__(self, name, game):
-        """_summary_
+        """Creates a player of the game.
 
         Args:
             name(str): Name of the player
@@ -120,6 +120,33 @@ class Player:
         self.count_melds + number
         return number
     
+    def choosing_bigger_meld(self, possible_melds):
+        """Makes sure melds aren't crossing over and that the biggest ones (4)
+        are returned.
+
+        Aleyna Yazici: 
+            Technique: set operations (union, intersection, difference, or 
+            symmetric difference) on sets or frozensets
+            
+        Returns:
+            list of lists: List of biggest melds
+        """
+        meld_set = [set(meld) for meld in possible_melds]
+        
+        biggest = max(len(meld) for meld in meld_set)
+    
+        result = []
+        used = set()
+        
+        for meld in meld_set:
+            if len(meld) == biggest:
+                if used.isdisjoint(meld):
+                    result.append(list(meld))
+                    used.update(meld)
+        return result
+        
+        
+        
 card_rankings = {"A": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, 
                  "J": 8, "Q": 9, "K": 10}
 class cpu_player:    
@@ -464,7 +491,7 @@ class Game:
             draw_pile(list of tuples): Shuffled deck
             discard_pile(list of tuples): Discarded cards pile
         """
-        self.player = Player("Human Player, self")
+        self.player = Player("Human Player", self)
         self.cpu = cpu_player()
         self.player_turn = "Human Player"
         self.cpu_turn = self
