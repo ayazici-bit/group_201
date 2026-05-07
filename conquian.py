@@ -31,7 +31,7 @@ class Player:
         while len(self.hand) < 10:
             self.hand.append(self.game.draw_pile.pop())
             
-    def draw_card(self, draw_pile, discard_pile):
+    def draw_card(self, draw_pile):
         """
         Draw a card from the draw pile and add card to hand if applicable.
 
@@ -150,7 +150,7 @@ class Player:
 card_rankings = {"A": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, 
                  "J": 8, "Q": 9, "K": 10}
 class cpu_player:    
-    def __init__(self):
+    def __init__(self, game):
         """
         Runs to intialize the things needed for the CPU player. This includes their hand,
         the meld_list, and the amount of cards it has melded.
@@ -492,9 +492,7 @@ class Game:
             discard_pile(list of tuples): Discarded cards pile
         """
         self.player = Player("Human Player", self)
-        self.cpu = cpu_player()
-        self.player_turn = "Human Player"
-        self.cpu_turn = self
+        self.cpu = cpu_player(self)
         
         self.cards = [('Ace', 'Diamonds'), ('2', 'Diamonds'), ('3', 'Diamonds'), 
              ('4', 'Diamonds'), ('5', 'Diamonds'), ('6', 'Diamonds'),
@@ -529,8 +527,8 @@ class Game:
             Take cards from draw pile or discard pile.
         """
         self.player.draw_card(self.draw_pile)
-        print(self.player_hand)
-        if check_win_condition(self.player_melds):
+        print(self.player.hand)
+        if check_win_condition(self.player.melds):
             return "PLAYER WIN"
     
     def cpu_turn_run(self):
