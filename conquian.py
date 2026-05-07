@@ -1,66 +1,87 @@
 """ A Python version of the card game 'Conquian' where the user plays against
 a computer player.
 """
-def draw_card(draw_pile):
-    """ Draw a card from the draw pile and add card to hand if applicable.
+import random
 
-    Args:
-        draw_pile (list of tuples): A list containing the draw pile’s number and
-        suit, such as ('7', 'hearts').
-
-    Returns:
-        str: The card that was drawn.
-
-    Raises:
-        ValueError: If the draw pile is empty. 
-
-    Side Effects:
-	    Appends the drawn card to the player’s hand/meld.
-	    Changes the draw pile state.
-	    Changes the player's hand state.
+class Player:
     """
-    if len(draw_pile) == 0:
-        raise ValueError("Draw pile is empty")
-    
-    drawn_card = draw_pile.pop()
-    print(f'Drawn card: {drawn_card}')
-    #hand will be the player's hand attribute which will be a list of tuples
-    #checking a 4-card meld
-    for i in range(len(hand)):
-        for j in range(i + 1, len(hand)):
-            for k in range(j + 1, len(hand)):
-                test_meld = [hand[i], hand[j], hand[k], drawn_card]
+    """
+    def __init__(self, name, game):
+        """
+        """
+        self.name = name
+        self.hand = []
+        self.melds = []
+        self.count_melds = 0
+    def deal_hand(self):
+        """
+
+        Args:
+            draw_pile (_type_): _description_
+        """
+        while len(self.hand) < 10:
+            self.hand.append(self.game.draw_pile.pop())
+            
+    def draw_card(self, draw_pile, discard_pile):
+        """ Draw a card from the draw pile and add card to hand if applicable.
+
+        Args:
+            draw_pile (list of tuples): A list containing the draw pile’s number and
+            suit, such as ('7', 'hearts').
+
+        Returns:
+            str: The card that was drawn.
+
+        Raises:
+            ValueError: If the draw pile is empty. 
+
+        Side Effects:
+            Appends the drawn card to the player’s hand/meld.
+            Changes the draw pile state.
+            Changes the player's hand state.
+        """
+        if len(draw_pile) == 0:
+            raise ValueError("Draw pile is empty")
+        
+        drawn_card = draw_pile.pop()
+        print(f'Drawn card: {drawn_card}')
+        #hand will be the player's hand attribute which will be a list of tuples
+        #checking a 4-card meld
+        for i in range(len(self.hand)):
+            for j in range(i + 1, len(self.hand)):
+                for k in range(j + 1, len(self.hand)):
+                    test_meld = [self.hand[i], self.hand[j], self.hand[k], drawn_card]
+                    
+                    if validate_meld(test_meld):
+                        card1 = self.hand[i]
+                        card2 = self.hand[j]
+                        card3 = self.hand[k] 
+                        
+                        #remove meld from hand
+                        self.hand.remove(card1)
+                        self.hand.remove(card2)
+                        self.hand.remove(card3)
+                        
+                        return f"New meld: {test_meld}" 
+        #check 3-card meld
+        for i in range(len(self.hand)):
+            for j in range(i + 1, len(self.hand)):
+                test_meld = [self.hand[i], self.hand[j], drawn_card]
                 
                 if validate_meld(test_meld):
-                    card1 = hand[i]
-                    card2 = hand[j]
-                    card3 = hand[k] 
-                    
+                    card1 = self.hand[i]
+                    card2 = self.hand[j]
+                        
                     #remove meld from hand
-                    hand.remove(card1)
-                    hand.remove(card2)
-                    hand.remove(card3)
-                    
-                    return f"New meld: {test_meld}" 
-    #check 3-card meld
-    for i in range(len(hand)):
-        for j in range(i + 1, len(hand)):
-            test_meld = [hand[i], hand[j], drawn_card]
-            
-            if validate_meld(test_meld):
-                card1 = hand[i]
-                card2 = hand[j]
-                    
-                #remove meld from hand
-                hand.remove(card1)
-                hand.remove(card2)
-                    
-                return f"New meld: {test_meld}"
-    
-    print(f"No melds possible, discarding: {drawn_card}")  
-    #added to the discard pile (which will be list of tuples) instead
-    discard_pile.append(drawn_card)           
-    return None
+                    self.hand.remove(card1)
+                    self.hand.remove(card2)
+                        
+                    return f"New meld: {test_meld}"
+        
+        print(f"No melds possible, discarding: {drawn_card}")  
+        #added to the discard pile (which will be list of tuples) instead
+        discard_pile.append(drawn_card)           
+        return None
 	
 card_rankings = {"A": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, 
                  "J": 8, "Q": 9, "K": 10}
@@ -306,7 +327,7 @@ def check_win_condition(player_melds):
         the correct format.
     """
 
-	if not isinstance(player_melds, list):
+    if not isinstance(player_melds, list):
 	        raise TypeError("player_melds must be a list.")
 	
 	    if len(player_melds) == 0:
@@ -377,9 +398,28 @@ def player_turn():
 
 class Game:
     def __init__(self):
+        self.player = Player()
         self.cpu = cpu_player()
         self.player_turn = "Human Player"
-
+        
+        self.cards = [('Ace', 'Diamonds'), ('2', 'Diamonds'), ('3', 'Diamonds'), 
+             ('4', 'Diamonds'), ('5', 'Diamonds'), ('6', 'Diamonds'),
+             ('7', 'Diamonds'),('Jack', 'Diamonds'),('Queen', 'Diamonds'),
+             ('King', 'Diamonds'), ('Ace', 'Clubs'), ('2', 'Clubs'),
+             ('3', 'Clubs'), ('4', 'Clubs'), ('5', 'Clubs'), ('6', 'Clubs'),
+             ('7', 'Clubs'), ('Jack', 'Clubs'),('Queen', 'Clubs'),
+             ('King', 'Clubs'), ('Ace', 'Hearts'), ('2', 'Hearts'),
+             ('3', 'Hearts'), ('4', 'Hearts'), ('5', 'Hearts'), ('6', 'Hearts'),
+             ('7', 'Hearts'), ('Jack', 'Hearts'), ('Queen', 'Hearts'),
+             ('King', 'Hearts'), ('Ace', 'Spades'), ('2', 'Spades'),
+             ('3', 'Spades'), ('4', 'Spades'), ('5', 'Spades'), ('6', 'Spades'),
+             ('7', 'Spades'), ('Jack', 'Spades'), ('Queen', 'Spades'),
+             ('King', 'Spades')
+             ]
+        self.draw_pile = self.cards.copy()
+        random.shuffle(self.draw_pile)
+        self.discard_pile = []
+    
     def play_game(self):
         if self.turn == "Human Player":
             
