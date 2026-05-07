@@ -328,24 +328,25 @@ def check_win_condition(player_melds):
     """
 
     if not isinstance(player_melds, list):
-	        raise TypeError("player_melds must be a list.")
-	
-	    if len(player_melds) == 0:
-	        raise ValueError("player_melds cannot be empty.")
-	
-	    total_cards = 0
-	
-	    for meld in player_melds:
-	        if not isinstance(meld, list):
-	            raise ValueError("Each meld must be a list of card tuples.")
-	
-	        for card in meld:
-				if not isinstance(card, tuple):
-					raise TypeError("Each card must be stored as a tuple.")
-				rank, suit - card 
-	            total_cards += 1
-		
-		 return True if total_cards == 11 else False 
+        raise TypeError("player_melds must be a list.")
+
+    if len(player_melds) == 0:
+        raise ValueError("player_melds cannot be empty.")
+
+    total_cards = 0
+
+    for meld in player_melds:
+        if not isinstance(meld, list):
+            raise ValueError("Each meld must be a list of card tuples.")
+
+        for card in meld:
+            if not isinstance(card, tuple):
+                raise TypeError("Each card must be stored as a tuple.")
+
+            rank, suit = card
+            total_cards += 1
+
+    return True if total_cards == 11 else False
 
 def player_turn():
     """
