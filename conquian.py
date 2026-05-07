@@ -35,6 +35,8 @@ class Player:
         """
         Draw a card from the draw pile and add card to hand if applicable.
 
+        Aleyna Yazici: 
+            Technique: Composition of two custome classes
         Args:
             draw_pile (list of tuples): A list containing the draw pile’s number and
             suit, such as ('7', 'hearts').
