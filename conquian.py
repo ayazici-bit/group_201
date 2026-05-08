@@ -427,15 +427,14 @@ def check_win_condition(player_melds):
         bool: True if the player has exactly 11 cards in melds, False otherwise.
 
     Side Effects:
-        Raises ValueError if the meld list is empty or if one of the melds is not in
-        the correct format.
+        Raises ValueError if one of the melds is not in the correct format.
     """
 
     if not isinstance(player_melds, list):
         raise TypeError("player_melds must be a list.")
 
     if len(player_melds) == 0:
-        raise ValueError("player_melds cannot be empty.")
+        return False
 
     total_cards = 0
 
