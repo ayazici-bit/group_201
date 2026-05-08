@@ -34,7 +34,10 @@ We used this website to learn how to play Conquian. The program is based on the 
 | cpu_try_draw | Thomas Carey | f-strings |
 | validate_meld | Paul Gomes | |
 | find_possible_melds | Paul Gomes | Comprehensions & Optional parameters |
-| check_win_condition | Nzinga Philbert | Sequence unpacking & Condtional expressions |
+| calculate_score | Nzinga Philbert | |
+| __lt__ | Nzinga Philbert | Magic methods other than __init__ |
+| suggest_best_player_meld | Nzinga Philbert ||
+| check_win_condition | Nzinga Philbert | Sequence unpacking|
 | player_turn | Thomas Carey | |
 | cpu_turn_run | Paul Gomes | |
 | play_game | Paul Gomes | |
