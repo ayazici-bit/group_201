@@ -241,6 +241,11 @@ class cpu_player:
             Can increase cpu_melded_cards_count.
             Can remove cards from discard_pile.
             Can end program if CPU meets win condition.
+
+        Techniques:
+            Key function: Uses max() to determine what the best meld is
+            (the one that uses the most cards) out of the possible melds
+            the CPU can make.
         """
         if len(self.game.discard_pile) == 0:
             return self.cpu_try_draw()
@@ -248,7 +253,7 @@ class cpu_player:
         poss_cpu_melds = find_possible_melds(cpu_hand_and_discard)
         if poss_cpu_melds:
             self.game.discard_pile.pop()
-            best_cpu_meld = poss_cpu_melds[0]
+            best_cpu_meld = max(poss_cpu_melds, key = len)
             for card in best_cpu_meld:
                 if card in self.cpu_cards:
                     self.cpu_cards.remove(card)
@@ -278,6 +283,11 @@ class cpu_player:
             Can increase cpu_melded_cards_count.
             Can append cards to discard_pile.
             Can end program if CPU meets win condition.
+
+        Techniques:
+            Key function: Uses max() to determine what the best meld is
+            (the one that uses the most cards) out of the possible melds
+            the CPU can make.
         """
         if len(self.game.draw_pile) == 0:
             return False
@@ -288,7 +298,7 @@ class cpu_player:
         cpu_hand_and_drawn = self.cpu_cards + [drawn_card]
         poss_cpu_melds = find_possible_melds(cpu_hand_and_drawn)
         if poss_cpu_melds:
-            best_cpu_meld = poss_cpu_melds[0]
+            best_cpu_meld = max(poss_cpu_melds, key = len)
             print(f"CPU made a meld: {best_cpu_meld}")
             for card in best_cpu_meld:
                 if card in self.cpu_cards:
