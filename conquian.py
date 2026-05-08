@@ -123,30 +123,48 @@ class Player:
         self.count_melds += number
         return number
     
-    def choosing_bigger_meld(self, possible_melds):
-        """Makes sure melds aren't crossing over and that the biggest ones (4)
-        are returned.
+    def best_discard_hint(self):
+        """Checks hand to see if there are any stand alone cards, less likely to
+        become a meld later on.
 
         Aleyna Yazici: 
             Technique: set operations (union, intersection, difference, or 
             symmetric difference) on sets or frozensets
             
         Returns:
-            list of lists: List of biggest melds
+            list: Recommended cards to discard
         """
-        meld_set = [set(meld) for meld in possible_melds]
+        safe_cards = set()
         
-        biggest = max(len(meld) for meld in meld_set)
-    
-        result = []
-        used = set()
+        for i in range(len(self.hand)):
+            for j in range(i + 1, len(self.hand)):
+                card1 = self.hand[i]
+                card2 = self.hand[j]
+                
+                if card1[0] == card2[0]:
+                    safe_cards = safe_cards.union({card1, card2})
+                    
+        for i in range(len(self.hand)):
+            for j in range(i + 1, len(self.hand)):
+                card1 = self.hand[i]
+                card2 = self.hand[j]
+                
+                value1 = card_rankings[card1[0]]
+                value2 = card_rankings[card2[0]]
+                
+                if card1[1] == card2[1]:
+                    if abs(value1 - value2) == 1:
+                        safe_cards = safe_cards.union({card1, card2})
         
-        for meld in meld_set:
-            if len(meld) == biggest:
-                if used.isdisjoint(meld):
-                    result.append(list(meld))
-                    used.update(meld)
-        return result
+        current_hand = set(self.hand)
+        discard_cards = current_hand.difference(safe_cards)
+        
+        indicies = []
+        for i in range(len(self.hand)):
+            if self.hand[i] in discard_cards:
+                indicies.append(i)
+                
+        return indicies
         
 card_rankings = {
     "Ace": 1,
@@ -561,36 +579,62 @@ def player_turn(player, game):
     choice = input(
         "Choose what cards you would like to add to a meld, "
         "list the cards by index separated by spaces (example: 0 4 8): ")
-    indices = choice.split()
-    try:
-        indices = [int(i) for i in indices]
-    except ValueError:
-        print("Please enter only numbers.")
-        return player_turn(player, game)
     chosen_cards = []
-    for index in indices:
-        if index < 0 or index >= len(player.hand):
-            print(f"Invalid index: {index}")
+    if choice.strip() != "":
+        indices = choice.split()
+        try:
+            indices = [int(i) for i in indices]
+        except ValueError:
+            print("Please enter only numbers.")
             return player_turn(player, game)
-        chosen_cards.append(player.hand[index])
-    if validate_meld(chosen_cards):
-        print("Good meld!")
-        for card in chosen_cards:
-            player.hand.remove(card)
-        player.melds.append(chosen_cards)
-        if check_win_condition(player.melds):
-            return "PLAYER WINS"
-    else:
-        print("Invalid meld")
+        
+        for index in indices:
+            if index < 0 or index >= len(player.hand):
+                print(f"Invalid index: {index}")
+                return player_turn(player, game)
+            chosen_cards.append(player.hand[index])
+        if validate_meld(chosen_cards):
+            print("Good meld!")
+            for card in chosen_cards:
+                player.hand.remove(card)
+            player.melds.append(chosen_cards)
+            if check_win_condition(player.melds):
+                return "PLAYER WINS"
+        else:
+            print("Invalid meld")
+            
+    print("\nCurrent hand: ")
     i = 0
     while i < len(player.hand):
         print(f"{i}: {player.hand[i]}")
         i += 1
-    chosen_discard = int(
-        input("What card would you like to discard? (Choose by index): ")
-    )
+        
+    want_hint = input(
+        "\nWould you like a discard hint? (y/n): "
+    ).lower()
+    if want_hint == "y":
+        hint = player.best_discard_hint()
+        if len(hint) == 0:
+            print("No obvious discard recommendations.")
+        else:
+            print("Suggested discard options: ")
+            for i in hint:
+                print(f"{i}: {player.hand[i]}")
+    try:         
+        chosen_discard = int(
+            input("What card would you like to discard? (Choose by index): ")
+        )
+        if chosen_discard < 0 or chosen_discard >= len(player.hand):
+            print("Invalid index.")
+            return player_turn(player, game)
+        
+    except ValueError:
+        print("Please enter a number.")
+        return player_turn(player, game)
+    
     discarded_card = player.hand.pop(chosen_discard)
     game.discard_pile.append(discarded_card)
+    print(f"You discarded: {discarded_card}")
 
 class Game:
     """
