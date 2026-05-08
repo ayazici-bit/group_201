@@ -35,7 +35,7 @@ We used this website to learn how to play Conquian. The program is based on the 
 | validate_meld | Paul Gomes | |
 | find_possible_melds | Paul Gomes | Comprehensions & Optional parameters |
 | calculate_score | Nzinga Philbert | |
-| __lt__ | Nzinga Philbert | Magic methods other than __init__ |
+| __lt__ | Nzinga Philbert | Magic methods other than __init__() |
 | suggest_best_player_meld | Nzinga Philbert ||
 | check_win_condition | Nzinga Philbert | Sequence unpacking|
 | player_turn | Thomas Carey | |
