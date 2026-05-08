@@ -147,13 +147,24 @@ class Player:
                     used.update(meld)
         return result
         
-        
-        
-card_rankings = {"A": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, 
-                 "J": 8, "Q": 9, "K": 10}
+card_rankings = {
+    "Ace": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "Jack": 8,
+    "Queen": 9,
+    "King": 10 
+    }
+
 class cpu_player:    
     def __init__(self, game):
         """
+        Thomas Carey
+        
         Runs to intialize the things needed for the CPU player. This includes their hand,
         the meld_list, and the amount of cards it has melded.
 
@@ -165,6 +176,10 @@ class cpu_player:
 
             cpu_melded_cards_count (int): The number of cards the CPU has melded. When
             the value reaches 11 the CPU has won and the game is over.
+
+            Techniques:
+                f-strings: f-strings are used to display information about the moves the
+                CPU makes to the user.
         """
         self.cpu_cards = []
         self.cpu_melds = []
@@ -199,9 +214,13 @@ class cpu_player:
             Can append cards to discard_pile.
             Can end program if CPU meets win condition.
         """
-        discard_card = self.game.discard_pile[-1]
-        if self.cpu_try_discard(discard_card):
-            return
+        print("\nCPU is taking its turn...")
+        
+        if discard_card is not None:
+            result = self.cpu_try_discard(discard_card)
+            if result:
+                return
+
         self.cpu_try_draw()
 
     def cpu_try_discard(self, discard_card):
@@ -222,7 +241,7 @@ class cpu_player:
             Can end program if CPU meets win condition.
         """
         if len(self.game.discard_pile) == 0:
-            return self.cpu.try_draw()
+            return self.cpu_try_draw()
         cpu_hand_and_discard = self.cpu_cards + [discard_card]
         poss_cpu_melds = find_possible_melds(cpu_hand_and_discard)
         if poss_cpu_melds:
@@ -235,7 +254,7 @@ class cpu_player:
             self.cpu_melded_cards_count += len(best_cpu_meld)
             print(f"The CPU has made a meld:{best_cpu_meld}. It used the discard pile" 
                   f"to do so. The CPU has now melded {self.cpu_melded_cards_count} cards.")
-            if self.cpu_melded_cards_count == 11:
+            if self.cpu_melded_cards_count >= 11:
                 print("The CPU has melded 11 cards and has beaten you! "
                 "Better luck next time.")
                 return "CPU WIN"
@@ -261,24 +280,29 @@ class cpu_player:
         if len(self.game.draw_pile) == 0:
             return False
         drawn_card = self.game.draw_pile.pop()
+        print(f"CPU draws: {drawn_card}")
         if type(drawn_card) is not tuple:
             return False
         cpu_hand_and_drawn = self.cpu_cards + [drawn_card]
         poss_cpu_melds = find_possible_melds(cpu_hand_and_drawn)
         if poss_cpu_melds:
             best_cpu_meld = poss_cpu_melds[0]
+            print(f"CPU made a meld: {best_cpu_meld}")
             for card in best_cpu_meld:
                 if card in self.cpu_cards:
                     self.cpu_cards.remove(card)
             self.cpu_melds.append(best_cpu_meld)
             self.cpu_melded_cards_count += len(best_cpu_meld)
-            if self.cpu_melded_cards_count == 11:
+            if self.cpu_melded_cards_count >= 11:
                 print("The CPU has melded 11 cards and has beaten you! "
                 "Better luck next time.")
                 return "CPU WIN"
         else:
-            discard_pile.append(drawn_card)
+            self.game.discard_pile.append(drawn_card)
+            print(f"CPU discards: {drawn_card}")
+        
         return True
+
 
 def validate_meld(cards):
     """
@@ -428,54 +452,70 @@ def check_win_condition(player_melds):
 
     return True if total_cards == 11 else False
 
-def player_turn():
+def player_turn(player, game):
     """
+    Thomas Carey
+    Executes the human player's turn.
 
+    Args:
+        player (Player object): The human player.
+        game (Game object): The current game being played.
+
+    Returns:
+        str or None:
+            Returns "PLAYER WINS" if the player wins.
     """
-    if len(discard_pile) == 0:
-        drawn_card = draw_card(draw_pile)
-        if type(drawn_card) is not tuple:
-                return
-        hand.append(drawn_card)
+    if len(game.draw_pile) == 0:
+        return "NO DRAW"
+    if len(game.discard_pile) == 0:
+        player.draw_card(game.draw_pile)
     else:
-        discard_card = discard_pile[0]    
-        dis_or_draw = input(f"Would you like to use the discard card: {discard_card}" 
-                            "(d) or draw a card (c)?").lower()
+        discard_card = game.discard_pile[-1]
+        dis_or_draw = input(
+            f"Would you like to use the discard card: {discard_card} "
+            "(d) or draw a card (c)? ").lower()
         if dis_or_draw == "c":
-            drawn_card = draw_card(draw_pile)
-            if type(drawn_card) is not tuple:
-                return
-            hand.append(drawn_card)
+            player.draw_card(game.draw_pile)
         elif dis_or_draw == "d":
-            discard_pile.pop(0)
-            hand.append(discard_card)
+            game.discard_pile.pop()
+            player.hand.append(discard_card)
     i = 0
-    while i < len(hand):
-        print(f"{i}: {hand[i]}")
+    while i < len(player.hand):
+        print(f"{i}: {player.hand[i]}")
         i += 1
-    choice = input("Choose what cards you would like to add to a meld,"
-    " list the cards by index seperated by spaces(ex: 0 4 8).")
+    choice = input(
+        "Choose what cards you would like to add to a meld, "
+        "list the cards by index separated by spaces (example: 0 4 8): ")
     indices = choice.split()
-    indices = [int(i) for i in indices]
+    try:
+        indices = [int(i) for i in indices]
+    except ValueError:
+        print("Please enter only numbers.")
+        return player_turn(player, game)
     chosen_cards = []
     for index in indices:
-        chosen_cards.append(hand[index])
+        if index < 0 or index >= len(player.hand):
+            print(f"Invalid index: {index}")
+            return player_turn(player, game)
+        chosen_cards.append(player.hand[index])
     if validate_meld(chosen_cards):
         print("Good meld!")
         for card in chosen_cards:
-            hand.remove(card)
-        player_melds.append(chosen_cards)
-        if check_win_condition(player_melds):
+            player.hand.remove(card)
+        player.melds.append(chosen_cards)
+        if check_win_condition(player.melds):
             return "PLAYER WINS"
     else:
         print("Invalid meld")
     i = 0
-    while i < len(hand):
-        print(f"{i}: {hand[i]}")
+    while i < len(player.hand):
+        print(f"{i}: {player.hand[i]}")
         i += 1
-        chosen_discard = int(input("What card would you like to discard? (Choose by index)"))
-        hand.remove(hand[chosen_discard])
-        discard_pile.append(hand[chosen_discard])
+    chosen_discard = int(
+        input("What card would you like to discard? (Choose by index): ")
+    )
+    discarded_card = player.hand.pop(chosen_discard)
+    game.discard_pile.append(discarded_card)
 
 class Game:
     """
@@ -516,22 +556,27 @@ class Game:
         self.player.deal_hand()
         self.cpu.deal_hand()
     
-    def player_turn(self):
-        """
-        Executes the human player's turn.
+    # def player_turn(self):
+    #     """
+    #     Executes the human player's turn.
 
-        Returns:
-            "PLAYER WIN" (str): Declares player the winner if win condition is met.
+    #     Returns:
+    #         "PLAYER WIN" (str): Declares player the winner if win condition is met.
 
-        Side Effects:
-            Draws cards to player's hand.
-            Can change player's melds.
-            Take cards from draw pile or discard pile.
-        """
-        self.player.draw_card(self.draw_pile)
-        print(self.player.hand)
-        if check_win_condition(self.player.melds):
-            return "PLAYER WIN"
+    #     Side Effects:
+    #         Draws cards to player's hand.
+    #         Can change player's melds.
+    #         Take cards from draw pile or discard pile.
+    #     """
+    #     if len(self.draw_pile) == 0:
+    #         return "NO DRAW"
+
+    #     self.player.draw_card(self.draw_pile)
+
+    #     print(self.player.hand)
+
+    #     if check_win_condition(self.player.melds):
+    #         return "PLAYER WIN"
     
     def cpu_turn_run(self):
         """
@@ -545,7 +590,12 @@ class Game:
             Can change CPU melds.
             Takes cards from draw pile or discard pile.
         """
-        if self.cpu.cpu_turn(self.discard_pile[-1]):
+        if len(self.discard_pile) == 0:
+            result = self.cpu.cpu_try_draw()
+        else:
+            result = self.cpu.cpu_turn(self.discard_pile[-1])
+
+        if result == "CPU WIN":
             return "CPU WIN"
     
     def play_game(self):
@@ -558,16 +608,24 @@ class Game:
             Can end game if win condition is met or draw pile is empty.
         """
         game_over = False
+        
         while not game_over:
+            print("\n--- PLAYER TURN ---")
+            player_result = player_turn(self.player, self)
+
+            if player_result == "PLAYER WINS":
+                print("You win!")
+                break
+
             if len(self.draw_pile) == 0:
                 print("The draw pile is empty, nobody wins.")
-                game_over = True
-            player_result = self.player_turn()
-            if player_result == "PLAYER WIN":
-                game_over = True
+                break
+            print("\n--- CPU TURN ---")
             cpu_result = self.cpu_turn_run()
+            input("Press Enter to continue...")
             if cpu_result == "CPU WIN":
-                game_over = True
+                print("CPU wins!")
+                break
 
 if __name__ == "__main__":
     game = Game()
