@@ -16,7 +16,7 @@ class Player:
 
         Args:
             name(str): Name of the player
-            game(Game object): Game surrently being played
+            game(Game object): Game currently being played
         """
         self.name = name
         self.game = game
@@ -36,10 +36,10 @@ class Player:
         Draw a card from the draw pile and add card to hand if applicable.
 
         Aleyna Yazici: 
-            Technique: Composition of two custome classes
+            Technique: Composition of two custom classes
         Args:
-            draw_pile (list of tuples): A list containing the draw pile’s number and
-            suit, such as ('7', 'hearts').
+            draw_pile (list of tuples): A list containing the draw pile’s number
+            and suit, such as ('7', 'hearts').
 
         Returns:
             str: The card that was drawn.
@@ -74,7 +74,8 @@ class Player:
                         self.hand.remove(card2)
                         self.hand.remove(card3)
                         
-                        return f"New meld: {test_meld}" 
+                        print(f"New meld: {test_meld}" )
+                        return test_meld
         #check 3-card meld
         for i in range(len(self.hand)):
             for j in range(i + 1, len(self.hand)):
@@ -88,7 +89,8 @@ class Player:
                     self.hand.remove(card1)
                     self.hand.remove(card2)
                         
-                    return f"New meld: {test_meld}"
+                    print(f"New meld: {test_meld}")
+                    return test_meld    
         
         print(f"No melds possible, discarding: {drawn_card}")  
         #added to the discard pile (which will be list of tuples) instead
@@ -117,7 +119,7 @@ class Player:
         if len(self.hand) < 2:
             raise ValueError
         number = len(find_possible_melds(self.hand))
-        self.count_melds + number
+        self.count_melds += number
         return number
     
     def choosing_bigger_meld(self, possible_melds):
