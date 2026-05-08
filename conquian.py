@@ -576,6 +576,12 @@ def player_turn(player, game):
     while i < len(player.hand):
         print(f"{i}: {player.hand[i]}")
         i += 1
+
+    suggested_meld = suggest_best_player_meld(player)
+    
+    if suggested_meld is not None:
+        print(f"Suggested meld: {suggested_meld}")
+    
     choice = input(
         "Choose what cards you would like to add to a meld, "
         "list the cards by index separated by spaces (example: 0 4 8): ")
@@ -712,9 +718,6 @@ class Game:
         
         while not game_over:
             print("\n--- PLAYER TURN ---")
-            
-            print("\nSuggested meld:")
-            print(suggest_best_player_meld(self.player))
             
             player_result = player_turn(self.player, self)
 
