@@ -423,15 +423,73 @@ def find_possible_melds(hand, max_meld_size=4):
 
     return possible_melds
 
+class Meld:
+    """
+    Represents a Conquian meld and allows melds to be compared by strength.
+    """
+
+    def __init__(self, cards):
+        self.cards = cards
+
+    def calculate_score(self):
+        """
+        Nzinga Philbert:
+        Calculates the strength score of a meld.
+       
+        Returns:
+            int: The score value of the meld.
+        """
+        score = 10 if len(self.cards) == 4 else 5
+
+        for card in self.cards:
+            rank, suit = card
+            score += card_rankings[rank]
+
+        return score
+
+    def __lt__(self, other):
+        """
+        Nzinga Philbert:
+        Technique:
+            - magic methods other than __init__(): the __lt__() method allows
+             Meld objects to be compared by score
+
+        Allows melds to be compared using < based on score.
+        """
+        return self.calculate_score() < other.calculate_score()
+
+
+def suggest_best_player_meld(player):
+    """
+    Nzinga Philbert:
+    Suggests the strongest meld possible from the player's hand.
+
+    Args:
+        player (Player): The current player.
+
+    Returns:
+        list or None: The best meld possible.
+    """
+    possible_melds = find_possible_melds(player.hand)
+
+    if len(possible_melds) == 0:
+        return None
+
+    meld_objects = []
+
+    for meld in possible_melds:
+        meld_objects.append(Meld(meld))
+
+    best_meld = max(meld_objects)
+
+    return best_meld.cards
+    
 def check_win_condition(player_melds):
     """
     Nzinga Philbert:
     Techniques:
         - sequence unpacking: card tuples are unpacked into rank and suit
           while looping through melds and cards.
-        - conditional expressions: a one line conditional expression is
-          used to return True if the player has exactly 11 melded cards
-          and False otherwise.
         
     Checks whether a player has won the game by reaching exactly 11 cards in melds.
 
@@ -609,6 +667,10 @@ class Game:
         
         while not game_over:
             print("\n--- PLAYER TURN ---")
+            
+            print("\nSuggested meld:")
+            print(suggest_best_player_meld(self.player))
+            
             player_result = player_turn(self.player, self)
 
             if player_result == "PLAYER WINS":
