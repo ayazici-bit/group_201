@@ -37,6 +37,7 @@ class Player:
 
         Aleyna Yazici: 
             Technique: Composition of two custom classes
+            
         Args:
             draw_pile (list of tuples): A list containing the draw pile’s number
             and suit, such as ('7', 'hearts').
@@ -57,12 +58,12 @@ class Player:
         
         drawn_card = draw_pile.pop()
         print(f'Drawn card: {drawn_card}')
-        #hand will be the player's hand attribute which will be a list of tuples
         #checking a 4-card meld
         for i in range(len(self.hand)):
             for j in range(i + 1, len(self.hand)):
                 for k in range(j + 1, len(self.hand)):
-                    test_meld = [self.hand[i], self.hand[j], self.hand[k], drawn_card]
+                    test_meld = [self.hand[i], self.hand[j], self.hand[k], 
+                                 drawn_card]
                     
                     if validate_meld(test_meld):
                         card1 = self.hand[i]
