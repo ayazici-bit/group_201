@@ -177,9 +177,7 @@ class cpu_player:
             cpu_melded_cards_count (int): The number of cards the CPU has melded. When
             the value reaches 11 the CPU has won and the game is over.
 
-            Techniques:
-                f-strings: f-strings are used to display information about the moves the
-                CPU makes to the user.
+
         """
         self.cpu_cards = []
         self.cpu_melds = []
@@ -285,9 +283,8 @@ class cpu_player:
             Can end program if CPU meets win condition.
 
         Techniques:
-            Key function: Uses max() to determine what the best meld is
-            (the one that uses the most cards) out of the possible melds
-            the CPU can make.
+            f-strings: f-strings are used to display information about the moves the
+            CPU makes to the user.
         """
         if len(self.game.draw_pile) == 0:
             return False
