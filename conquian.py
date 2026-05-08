@@ -203,6 +203,8 @@ class cpu_player:
         no meld can be formed it will draw a card in an attempt to make melds with that card.
         If no melds can be formed it will discard a card.
 
+        Paul Gomes
+        
         Args:
             discard_card (tuple): The top card on the discard pile.
 
@@ -567,6 +569,8 @@ class Game:
         """
         Executes the CPU player's turn.
 
+        Paul Gomes
+        
         Returns:
             "CPU WIN" (str): Declares CPU the winner if win condition is met.
 
@@ -587,7 +591,9 @@ class Game:
         """
         Lets player and CPU execute turns until the game is over. The game is over
         when one of them wins or when the draw pile is empty.
-
+        
+        Paul Gomes
+        
         Side Effects:
             Alternates turns.
             Can end game if win condition is met or draw pile is empty.
