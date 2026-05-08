@@ -416,6 +416,14 @@ def find_possible_melds(hand, max_meld_size=4):
 
 def check_win_condition(player_melds):
     """
+    Nzinga Philbert:
+    Techniques:
+        - sequence unpacking: card tuples are unpacked into rank and suit
+          while looping through melds and cards.
+        - conditional expressions: a one line conditional expression is
+          used to return True if the player has exactly 11 melded cards
+          and False otherwise.
+        
     Checks whether a player has won the game by reaching exactly 11 cards in melds.
 
     Args:
@@ -427,7 +435,7 @@ def check_win_condition(player_melds):
         bool: True if the player has exactly 11 cards in melds, False otherwise.
 
     Side Effects:
-        Raises ValueError if one of the melds is not in the correct format.
+        Raises ValueError if one of the melds is not in the correct format.   
     """
 
     if not isinstance(player_melds, list):
