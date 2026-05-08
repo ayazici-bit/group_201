@@ -556,28 +556,6 @@ class Game:
         self.player.deal_hand()
         self.cpu.deal_hand()
     
-    # def player_turn(self):
-    #     """
-    #     Executes the human player's turn.
-
-    #     Returns:
-    #         "PLAYER WIN" (str): Declares player the winner if win condition is met.
-
-    #     Side Effects:
-    #         Draws cards to player's hand.
-    #         Can change player's melds.
-    #         Take cards from draw pile or discard pile.
-    #     """
-    #     if len(self.draw_pile) == 0:
-    #         return "NO DRAW"
-
-    #     self.player.draw_card(self.draw_pile)
-
-    #     print(self.player.hand)
-
-    #     if check_win_condition(self.player.melds):
-    #         return "PLAYER WIN"
-    
     def cpu_turn_run(self):
         """
         Executes the CPU player's turn.
