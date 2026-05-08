@@ -27,7 +27,7 @@ We used this website to learn how to play Conquian. The program is based on the 
 | draw_card | Aleyna Yazici | Composition of two custom classes |
 | show_hand | Aleyna Yazici | |
 | number_of_melds | Aleyna Yazici | |
-| choosing_bigger_meld | Aleyna Yazici | Set operations |
+| best_discard_hint | Aleyna Yazici | Set operations |
 | deal_hand (cpu) | Thomas Carey | |
 | cpu_turn | Thomas Carey | |
 | cpu_try_discard | Thomas Carey | Key functions |
