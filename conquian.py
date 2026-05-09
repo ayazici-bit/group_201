@@ -681,7 +681,59 @@ class Game:
         self.player.deal_hand()
         self.cpu.deal_hand()
     
-    
+    def cpu_turn_run(self):
+        """
+        Executes the CPU player's turn.
+
+        Paul Gomes
+        
+        Returns:
+            "CPU WIN" (str): Declares CPU the winner if win condition is met.
+
+        Side Effects:
+            Can change CPU cards.
+            Can change CPU melds.
+            Takes cards from draw pile or discard pile.
+        """
+        if len(self.discard_pile) == 0:
+            result = self.cpu.cpu_try_draw()
+        else:
+            result = self.cpu.cpu_turn(self.discard_pile[-1])
+
+        if result == "CPU WIN":
+            return "CPU WIN"
+        
+    def play_game(self):
+        """
+        Lets player and CPU execute turns until the game is over. The game is over
+        when one of them wins or when the draw pile is empty.
+        
+        Paul Gomes
+        
+        Side Effects:
+            Alternates turns.
+            Can end game if win condition is met or draw pile is empty.
+        """
+        game_over = False
+        
+        while not game_over:
+            print("\n--- PLAYER TURN ---")
+            
+            player_result = player_turn(self.player, self)
+
+            if player_result == "PLAYER WINS":
+                print("You win!")
+                break
+
+            if len(self.draw_pile) == 0:
+                print("The draw pile is empty, nobody wins.")
+                break
+            print("\n--- CPU TURN ---")
+            cpu_result = self.cpu_turn_run()
+            input("Press Enter to continue...")
+            if cpu_result == "CPU WIN":
+                print("CPU wins!")
+                break    
     
     
 
